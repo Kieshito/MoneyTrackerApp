@@ -210,6 +210,7 @@ fun TransactionList(modifier: Modifier, dataList: List<TransactionEntity>, viewM
              )
         }
     }
+
 }
 
 
