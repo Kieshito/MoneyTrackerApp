@@ -2,7 +2,13 @@
 <project version="4">
   <component name="deploymentTargetDropDown">
     <value>
+      <entry key="AddExpensePreview">
+        <State />
+      </entry>
       <entry key="PreviewHomeScreen">
+        <State />
+      </entry>
+      <entry key="PreviewLoginForm">
         <State />
       </entry>
       <entry key="app">

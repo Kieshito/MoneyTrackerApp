@@ -104,7 +104,11 @@ fun LoginForm(navController: NavController, modifier: Modifier){
         OutlinedTextField(value = "", onValueChange = {}, modifier = Modifier.fillMaxWidth())
         Spacer(modifier = Modifier.size(16.dp))
 
-        Button(onClick = {navController.navigate("/home")}, //не разобрался как очистить стек перед/после перехода
+        Button(onClick = {
+            navController.navigate("/home"){
+                navController.popBackStack()
+            }
+                         }, //TODO: доделать, чтоб возвращало даже не на стартовый экран, а выкидывало из приложения
             Modifier
                 .clip(RoundedCornerShape(2.dp))
                 .fillMaxWidth()){

@@ -6,8 +6,10 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -81,12 +83,13 @@ fun StartScreen(navController: NavController) {
             Image(
                 painter = painterResource(id = R.drawable.bt_registration),
                 contentDescription = null,
-                modifier = Modifier. padding(top = 100.dp, start = 24.dp, end = 24.dp)
+                modifier = Modifier. padding(top = 250.dp, start = 24.dp, end = 24.dp)
                     .constrainAs(registrating) {
                         top.linkTo(card.bottom)
                         end.linkTo(parent.end)
                     }
-                    .size(350.dp)
+                    .width(350.dp)
+                    .height(65.dp)
                     .clickable {
                         navController.navigate("/registration")
                     }
@@ -94,12 +97,13 @@ fun StartScreen(navController: NavController) {
             Image(
                 painter = painterResource(id = R.drawable.bt_login),
                 contentDescription = null,
-                modifier = Modifier.padding(top = 175.dp, start = 24.dp, end = 24.dp)
+                modifier = Modifier.padding(top = 333.dp, start = 24.dp, end = 24.dp)
                     .constrainAs(login) {
                         top.linkTo(card.bottom)
                         end.linkTo(parent.end)
                     }
-                    .size(350.dp)
+                    .width(350.dp)
+                    .height(65.dp)
                     .clickable {
                         navController.navigate("/login")
                     }
