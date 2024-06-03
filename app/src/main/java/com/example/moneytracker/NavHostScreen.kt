@@ -28,5 +28,8 @@ fun NavHostScreen() {
         composable(route ="/start_screen"){
             StartScreen(navController = navController)
         }
+        composable(route = "/info"){
+            //TODO: сделать экран
+        }
     }
 }

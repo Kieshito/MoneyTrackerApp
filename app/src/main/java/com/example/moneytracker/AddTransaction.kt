@@ -1,5 +1,6 @@
 package com.example.moneytracker
 
+import android.annotation.SuppressLint
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -20,6 +21,7 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Surface
@@ -121,6 +123,7 @@ fun AddExpense(navController: NavController) {
     }
 }
 
+
 @Composable
 fun DataForm(modifier: Modifier,
              onAddTransactionClick: (model: TransactionEntity) ->Unit,
@@ -128,7 +131,6 @@ fun DataForm(modifier: Modifier,
     val name = remember{
         mutableStateOf("")
     }
-
 
     var amount = remember{
         mutableStateOf("")
@@ -259,6 +261,7 @@ fun DataForm(modifier: Modifier,
         Button(onClick = {
             val model = TransactionEntity(
                 null,
+                MainActivity.enteredUserId,
                 name.value,
                 amount.value.toDoubleOrNull() ?: 0.0,
                 Utils.formatDateToReadableForm(date.value),

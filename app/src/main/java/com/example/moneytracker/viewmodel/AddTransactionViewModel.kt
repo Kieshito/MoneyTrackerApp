@@ -26,9 +26,6 @@ class AddTransactionViewModel(val dao: TransactionDao) : ViewModel() {
                 transactionEntity.amount.isNaN() || transactionEntity.amount.compareTo(0L) < 0)
     }
 
-    fun valudateSMTH(it: Any?) {
-
-    }
 }
 
 class AddTransactionViewModelFactoty(private val context: Context): ViewModelProvider.Factory{

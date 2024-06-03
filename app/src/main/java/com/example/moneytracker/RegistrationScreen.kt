@@ -16,22 +16,36 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.example.moneytracker.data.model.RegisteredUser
+import com.example.moneytracker.viewmodel.LoginViewModel
+import com.example.moneytracker.viewmodel.LoginViewModelFactoty
+import com.example.moneytracker.viewmodel.RegistrationViewModel
+import com.example.moneytracker.viewmodel.RegistrationViewModelFactoty
+import kotlinx.coroutines.launch
 
 @Composable
 fun RegistrationScreen(navController: NavController) {
+    val viewModel = RegistrationViewModelFactoty(LocalContext.current).create(RegistrationViewModel::class.java)
+    val coroutineScope = rememberCoroutineScope()
+
     Surface(modifier = Modifier.fillMaxSize()) {
         ConstraintLayout(modifier = Modifier.fillMaxSize()) {
             val (nameRow, moneyPicture, card, topBar) = createRefs()
@@ -71,21 +85,44 @@ fun RegistrationScreen(navController: NavController) {
                     top.linkTo(nameRow.bottom)
                     start.linkTo(parent.start)
                     end.linkTo(parent.end)
-                })
+                }, onConfirmClick = {
+                    coroutineScope.launch {
+                        if (viewModel.checkUser(it)){
+                            viewModel.registration(it)
+                            navController.navigate("/home"){
+                                navController.popBackStack()
+                            }
+                        }
+                    }
+            })
             Image(painter = painterResource(id = R.drawable.ic_start),
                 contentDescription = null,
-                modifier = Modifier.padding(top = 383.dp, start = 24.dp, end = 16.dp).size(150.dp).constrainAs(moneyPicture){
-                    top.linkTo(card.top)
-                    bottom.linkTo(parent.bottom)
-                    start.linkTo(parent.start)
-                    end.linkTo(parent.end)
-                })
+                modifier = Modifier
+                    .padding(top = 383.dp, start = 24.dp, end = 16.dp)
+                    .size(150.dp)
+                    .constrainAs(moneyPicture) {
+                        top.linkTo(card.top)
+                        bottom.linkTo(parent.bottom)
+                        start.linkTo(parent.start)
+                        end.linkTo(parent.end)
+                    })
         }
     }
 }
 
 @Composable
-fun RegistrationForm(navController: NavController, modifier: Modifier){
+fun RegistrationForm(navController: NavController, modifier: Modifier, onConfirmClick: (user: RegisteredUser) -> Unit){
+    val Login = remember {
+        mutableStateOf("")
+    }
+    val Password = remember {
+        mutableStateOf("")
+    }
+    val Treatment = remember {
+        mutableStateOf("")
+    }
+
+
     Column(modifier = modifier
         .padding(16.dp)
         .fillMaxWidth()
@@ -96,23 +133,43 @@ fun RegistrationForm(navController: NavController, modifier: Modifier){
     ){
         Text(text = "Login", fontSize = 14.sp, color = Color.Gray)
         Spacer(Modifier.size(4.dp))
-        OutlinedTextField(value = "", onValueChange = {}, modifier = Modifier.fillMaxWidth())
+        OutlinedTextField(
+            value = Login.value,
+            onValueChange = {
+                Login.value = it
+            },
+            modifier = Modifier.fillMaxWidth())
         Spacer(modifier = Modifier.size(16.dp))
 
         Text(text = "Password", fontSize = 14.sp, color = Color.Gray)
         Spacer(Modifier.size(4.dp))
-        OutlinedTextField(value = "", onValueChange = {}, modifier = Modifier.fillMaxWidth())
+        OutlinedTextField(
+            value = Password.value,
+            onValueChange = {
+                Password.value = it
+            },
+            visualTransformation = PasswordVisualTransformation(),
+            modifier = Modifier.fillMaxWidth())
         Spacer(modifier = Modifier.size(16.dp))
 
-        Text(text = "Email", fontSize = 14.sp, color = Color.Gray)
+        Text(text = "Preferred Treatment", fontSize = 14.sp, color = Color.Gray)
         Spacer(Modifier.size(4.dp))
-        OutlinedTextField(value = "", onValueChange = {}, modifier = Modifier.fillMaxWidth())
+        OutlinedTextField(
+            value = Treatment.value,
+            onValueChange = {
+                Treatment.value = it
+            },
+            modifier = Modifier.fillMaxWidth())
         Spacer(modifier = Modifier.size(16.dp))
 
         Button(onClick = {
-            navController.navigate("/home"){
-                navController.popBackStack()
-            }
+            val model = RegisteredUser(
+                null,
+                Login.value,
+                Treatment.value,
+                Password.value
+            )
+            onConfirmClick(model)
                          }, //TODO: доделать, чтоб возвращало даже не на стартовый экран, а выкидывало из приложения
             Modifier
                 .clip(RoundedCornerShape(2.dp))

@@ -45,7 +45,7 @@ fun HomeScreen(navController: NavController) {
     val viewModel = HomeViewModelFactoty(LocalContext.current).create(HomeViewModel::class.java)
 
     Surface(modifier = Modifier.fillMaxSize()){
-        //navController.clearBackStack("/home")
+        navController.clearBackStack("/home")
 
         ConstraintLayout(modifier = Modifier.fillMaxSize()){
             val(nameRow, list, card, topBar, addExpensive)= createRefs()
@@ -71,8 +71,8 @@ fun HomeScreen(navController: NavController) {
                         color = Color.White
                     )
                     Text(
-                        text = "User Name",
-                        fontSize = 20.sp,
+                        text = MainActivity.enteredName,
+                        fontSize = 25.sp,
                         fontWeight = FontWeight.Bold,
                         color = Color.White
                     )
@@ -143,10 +143,10 @@ fun CardItem(modifier: Modifier, expenses: String, income: String, balance: Stri
             .fillMaxWidth()
             .weight(1f)) {
             Column (modifier = Modifier.align(Alignment.CenterStart)){
-                Text(text = "Total Balance", fontSize = 16.sp, color = Color.White)
+                Text(text = "Total Balance", fontSize = 20.sp, color = Color.White)
                 Text(
                     text = balance,
-                    fontSize = 24.sp,
+                    fontSize = 28.sp,
                     fontWeight = FontWeight.Bold,
                     color = Color.White
                 )
@@ -217,10 +217,11 @@ fun TransactionList(modifier: Modifier, dataList: List<TransactionEntity>, viewM
 
 @Composable
 fun TransactionListItem(title: String, amount: String, icon: Int, date:String, color: Color){
+
     Box(modifier = Modifier
         .fillMaxWidth()
         .padding(vertical = 8.dp)
-        .clickable { TODO("information of transaction screen") }){
+        .clickable { TODO("information about selected transaction")}){
         Row{
             Image(painterResource(id = icon), contentDescription = null, modifier = Modifier.size(50.dp))
             Spacer(modifier = Modifier.size(8.dp))
@@ -238,7 +239,6 @@ fun TransactionListItem(title: String, amount: String, icon: Int, date:String, c
         )
     }
 }
-
 
 @Composable
 @Preview (showBackground = true)
