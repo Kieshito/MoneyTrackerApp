@@ -10,9 +10,11 @@ import com.example.moneytracker.data.dao.TransactionDao
 import com.example.moneytracker.data.dao.UserDao
 import com.example.moneytracker.data.model.RegisteredUser
 import com.example.moneytracker.data.model.TransactionEntity
+import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.flow.forEach
 import java.lang.IllegalArgumentException
 
-class HomeViewModel(daoTransaction: TransactionDao, daoUser: UserDao): ViewModel() {
+class HomeViewModel(private val daoTransaction: TransactionDao, daoUser: UserDao): ViewModel() {
     val transactions = daoTransaction.getAllTransactions(MainActivity.enteredUserId)
 
     fun getBalance(list: List<TransactionEntity>): String{
@@ -52,6 +54,20 @@ class HomeViewModel(daoTransaction: TransactionDao, daoUser: UserDao): ViewModel
             R.drawable.ic_expense_transaction
         } else R.drawable.ic_income_transaction
     }
+
+    suspend fun removeTransaction(id: Int): Boolean {
+        var isDeleted = false
+        transactions.collect {
+            it.forEach {
+                if (it.transactionId == id) {
+                    daoTransaction.deleteTransaction(it)
+                    isDeleted = true
+                }
+            }
+        }
+        return isDeleted
+    }
+
 }
 
 class HomeViewModelFactoty(private val context: Context): ViewModelProvider.Factory{

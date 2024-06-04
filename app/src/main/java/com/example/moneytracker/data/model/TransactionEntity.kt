@@ -8,7 +8,7 @@ import androidx.room.PrimaryKey
     foreignKeys = [ForeignKey(entity = RegisteredUser::class, parentColumns = ["userId"], childColumns = ["userOwnerId"], onDelete = ForeignKey.CASCADE)]
 )
 data class TransactionEntity(
-    @PrimaryKey(autoGenerate = true) val transactionId: Int?,
+    @PrimaryKey(autoGenerate = true) var transactionId: Int?,
     val userOwnerId: Int,
     val name: String,
     val amount: Double,

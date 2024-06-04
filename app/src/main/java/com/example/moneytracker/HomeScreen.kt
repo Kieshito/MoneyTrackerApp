@@ -16,10 +16,16 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -38,11 +44,14 @@ import com.example.moneytracker.data.model.TransactionEntity
 import com.example.moneytracker.ui.theme.Zinc
 import com.example.moneytracker.viewmodel.HomeViewModel
 import com.example.moneytracker.viewmodel.HomeViewModelFactoty
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 
 
 @Composable
 fun HomeScreen(navController: NavController) {
     val viewModel = HomeViewModelFactoty(LocalContext.current).create(HomeViewModel::class.java)
+    val coroutineScope = rememberCoroutineScope()
 
     Surface(modifier = Modifier.fillMaxSize()){
         navController.clearBackStack("/home")
@@ -83,7 +92,7 @@ fun HomeScreen(navController: NavController) {
                     modifier = Modifier
                         .align(Alignment.CenterEnd)
                         .size(25.dp)
-                        .clickable{
+                        .clickable {
                             navController.popBackStack()
                         }
                 )
@@ -108,7 +117,7 @@ fun HomeScreen(navController: NavController) {
                     end.linkTo(parent.end)
                     bottom.linkTo(parent.bottom)
                     height = Dimension.fillToConstraints
-                }, dataList = state.value, viewModel)
+                }, dataList = state.value, viewModel, coroutineScope)
             Image(
                 painter = painterResource(id = R.drawable.ic_addexpensive),
                 contentDescription = null,
@@ -186,7 +195,7 @@ fun CardRowItem(modifier: Modifier,title: String, amount: String, image: Int){
 }
 
 @Composable
-fun TransactionList(modifier: Modifier, dataList: List<TransactionEntity>, viewModel: HomeViewModel){
+fun TransactionList(modifier: Modifier, dataList: List<TransactionEntity>, viewModel: HomeViewModel, coroutineScope: CoroutineScope){
     LazyColumn(modifier = modifier
         .padding(horizontal = 16.dp)
         .height(1.dp)){
@@ -201,27 +210,40 @@ fun TransactionList(modifier: Modifier, dataList: List<TransactionEntity>, viewM
             }
         }
         items(dataList.takeLast(5)){item->
-            TransactionListItem(
-                title = item.name,
-                amount = item.amount.toString(),
-                icon = viewModel.getItemIcon(item),
-                date = item.date,
-                color = if (item.type=="Income") Zinc else Color.Red,
-             )
+            item.transactionId?.let {
+                TransactionListItem(
+                    title = item.name,
+                    amount = item.amount.toString(),
+                    icon = viewModel.getItemIcon(item),
+                    date = item.date,
+                    color = if (item.type=="Income") Zinc else Color.Red,
+                    itemId = it,
+                    viewModel,
+                    coroutineScope
+                )
+            }
         }
     }
 
 }
 
 
-
 @Composable
-fun TransactionListItem(title: String, amount: String, icon: Int, date:String, color: Color){
+fun TransactionListItem(title: String,
+                        amount: String,
+                        icon: Int,
+                        date:String,
+                        color: Color,
+                        itemId: Int,
+                        viewModel: HomeViewModel,
+                        coroutineScope: CoroutineScope){
+
+    var isDeleteDialogVisible = remember { mutableStateOf(false) }
 
     Box(modifier = Modifier
         .fillMaxWidth()
         .padding(vertical = 8.dp)
-        .clickable { TODO("information about selected transaction")}){
+        .clickable { TODO("information about selected transaction") }){
         Row{
             Image(painterResource(id = icon), contentDescription = null, modifier = Modifier.size(50.dp))
             Spacer(modifier = Modifier.size(8.dp))
@@ -233,10 +255,59 @@ fun TransactionListItem(title: String, amount: String, icon: Int, date:String, c
         Text(
             text = amount,
             fontSize = 20.sp,
-            modifier = Modifier.align(Alignment.CenterEnd),
+            modifier = Modifier
+                .align(Alignment.CenterEnd)
+                .padding(end = 50.dp),
             color = color,
             fontWeight = FontWeight.SemiBold
         )
+        Image(
+            painterResource(id = R.drawable.ic_delete),
+            contentDescription = null,
+            modifier = Modifier
+                .align(Alignment.CenterEnd)
+                .size(30.dp)
+                .clickable {
+                    coroutineScope.launch {
+                        isDeleteDialogVisible.value = true
+                    }
+                })
+        if (isDeleteDialogVisible.value) {
+            AlertDialog(
+                onDismissRequest = {
+                    isDeleteDialogVisible.value = false
+                },
+                title = { Text(text = "Delete confirmation") },
+                text = { Text(text = "Are you sure you want to delete this transaction?") },
+                confirmButton = {
+                    Button(
+                        onClick = {
+                            coroutineScope.launch {
+                               viewModel.removeTransaction(itemId)
+                            }
+                            isDeleteDialogVisible.value = false
+                        }, colors = ButtonDefaults.buttonColors(Zinc)
+                    ) {
+                        Text(
+                            text = "Confirm",
+                            color = Color.White,
+                        )
+                    }
+                },
+                dismissButton = {
+                    Button(
+                        onClick = {
+                            isDeleteDialogVisible.value = false
+                        }, colors = ButtonDefaults.buttonColors(Color.Red)
+                    ) {
+                        Text(
+                            text = "Cancel",
+                            color = Color.White
+                        )
+                    }
+                },
+            )
+        }
     }
 }
 
