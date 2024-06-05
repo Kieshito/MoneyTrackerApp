@@ -42,6 +42,7 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.moneytracker.data.model.TransactionEntity
 import com.example.moneytracker.ui.theme.Zinc
+import com.example.moneytracker.ui.theme.grayOne
 import com.example.moneytracker.viewmodel.HomeViewModel
 import com.example.moneytracker.viewmodel.HomeViewModelFactoty
 import kotlinx.coroutines.CoroutineScope
@@ -129,7 +130,7 @@ fun HomeScreen(navController: NavController) {
                         start.linkTo(parent.start)
                     }
                     .size(100.dp)
-                    .clip(CircleShape)
+                    //.clip(CircleShape)
                     .clickable {
                         navController.navigate("/add")
                     }
@@ -226,6 +227,7 @@ fun TransactionList(modifier: Modifier, dataList: List<TransactionEntity>, viewM
                     viewModel,
                     coroutineScope
                 )
+                Spacer(modifier = Modifier.size(8.dp))
             }
         }
     }
@@ -247,7 +249,9 @@ fun TransactionListItem(title: String,
 
     Box(modifier = Modifier
         .fillMaxWidth()
+        .background(grayOne, shape = RoundedCornerShape(16.dp))
         .padding(vertical = 8.dp)
+        .padding(start = 6.dp)
         .clickable { TODO("information about selected transaction") }){
         Row{
             Image(painterResource(id = icon), contentDescription = null, modifier = Modifier.size(50.dp))
@@ -271,6 +275,7 @@ fun TransactionListItem(title: String,
             contentDescription = null,
             modifier = Modifier
                 .align(Alignment.CenterEnd)
+                .padding(8.dp)
                 .size(30.dp)
                 .clickable {
                     coroutineScope.launch {

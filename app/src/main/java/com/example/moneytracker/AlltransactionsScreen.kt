@@ -123,8 +123,7 @@ fun AllTransactions(navController: NavController){
 fun AllTransactionList(modifier: Modifier, dataList: List<TransactionEntity>, viewModel: HomeViewModel, coroutineScope: CoroutineScope, navController: NavController){
     LazyColumn(modifier = modifier
         .padding(horizontal = 16.dp)
-        .height(1.dp)
-        .background(grayOne, shape = RoundedCornerShape(16.dp))){
+        .height(1.dp)){
         item{
         }
         items(dataList){item->
@@ -139,6 +138,7 @@ fun AllTransactionList(modifier: Modifier, dataList: List<TransactionEntity>, vi
                     viewModel,
                     coroutineScope
                 )
+                Spacer(modifier = Modifier.size(8.dp))
             }
         }
     }
@@ -158,7 +158,9 @@ fun AllTransactionListItem(title: String,
 
     Box(modifier = Modifier
         .fillMaxWidth()
+        .background(grayOne, shape = RoundedCornerShape(16.dp))
         .padding(vertical = 8.dp)
+        .padding(start = 6.dp)
         .clickable { TODO("information about selected transaction") }){
         Row{
             Image(painterResource(id = icon), contentDescription = null, modifier = Modifier.size(50.dp))
@@ -181,6 +183,7 @@ fun AllTransactionListItem(title: String,
             painterResource(id = R.drawable.ic_delete),
             contentDescription = null,
             modifier = Modifier
+                .padding(8.dp)
                 .align(Alignment.CenterEnd)
                 .size(30.dp)
                 .clickable {

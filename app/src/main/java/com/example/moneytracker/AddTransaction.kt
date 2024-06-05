@@ -14,7 +14,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.DropdownMenuItem
@@ -53,6 +55,7 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.moneytracker.data.model.TransactionEntity
+import com.example.moneytracker.ui.theme.Zinc
 import com.example.moneytracker.viewmodel.AddTransactionViewModel
 import com.example.moneytracker.viewmodel.AddTransactionViewModelFactoty
 import kotlinx.coroutines.launch
@@ -65,6 +68,10 @@ private val typeList = listOf("None", "Income", "Expense")
 fun AddExpense(navController: NavController) {
     val viewModel = AddTransactionViewModelFactoty(LocalContext.current).create(AddTransactionViewModel::class.java)
     val coroutineScope = rememberCoroutineScope()
+
+    val isErrorDialogVisible = remember{
+        mutableStateOf(false)
+    }
 
     Surface(modifier = Modifier.fillMaxSize()) {
         ConstraintLayout(modifier = Modifier.fillMaxSize()) {
@@ -113,11 +120,34 @@ fun AddExpense(navController: NavController) {
                 }, onAddTransactionClick = {
                     coroutineScope.launch {
                         if (viewModel.addTransaction(it)){
-                            //ShowMessage(message = "Error")
                             navController.popBackStack()
+                        } else {
+                            isErrorDialogVisible.value = true
                         }
                     }
                 }, viewModel
+            )
+        }
+        if (isErrorDialogVisible.value){
+            AlertDialog(
+                onDismissRequest = {
+                },
+                title = { Text(text = "Error") },
+                text = { Text(text = "Incorrect transaction, check your data before submit transaction") },
+                confirmButton = {
+                    Button(
+                        onClick = {
+                            coroutineScope.launch {
+                                isErrorDialogVisible.value = false
+                            }
+                        }, colors = ButtonDefaults.buttonColors(Zinc)
+                    ) {
+                        Text(
+                            text = "Confirm",
+                            color = Color.White,
+                        )
+                    }
+                }
             )
         }
     }
