@@ -19,8 +19,7 @@ class RegistrationViewModel(private val dao: UserDao): ViewModel() {
         }.start()
         delay(1000)
         users.forEach {
-            if (it.password == user.password &&
-                it.login == user.login &&
+            if (it.login == user.login &&
                 it.preferredTreatment == user.preferredTreatment) return false
 
         }
@@ -34,13 +33,14 @@ class RegistrationViewModel(private val dao: UserDao): ViewModel() {
         Thread {
             users = dao.getAllUsers()
         }.start()
-        delay(1000)
+        delay(250)
         users.forEach {
             if (it.password == user.password &&
                 it.login == user.login &&
                 it.preferredTreatment == user.preferredTreatment){
                 MainActivity.enteredUserId = it.userId!!
                 MainActivity.enteredName = it.preferredTreatment.toString()
+                MainActivity.enteredLogin = it.login
             }
         }
     }

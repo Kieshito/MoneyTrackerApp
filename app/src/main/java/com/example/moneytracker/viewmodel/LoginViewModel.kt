@@ -16,10 +16,11 @@ class LoginViewModel(private val dao: UserDao): ViewModel() {
         Thread{
             users = dao.getAllUsers()
         }.start()
-        delay(1000)
+        delay(250)
         users.forEach {
             if (it.login == login && it.password == password){
                 MainActivity.enteredName = it.preferredTreatment.toString()
+                MainActivity.enteredLogin = it.login
                 return it.userId
             }
         }

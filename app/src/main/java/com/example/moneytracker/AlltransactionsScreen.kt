@@ -14,7 +14,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
@@ -28,7 +27,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -42,181 +40,96 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.moneytracker.data.model.TransactionEntity
 import com.example.moneytracker.ui.theme.Zinc
+import com.example.moneytracker.ui.theme.grayOne
 import com.example.moneytracker.viewmodel.HomeViewModel
 import com.example.moneytracker.viewmodel.HomeViewModelFactoty
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
-
 @Composable
-fun HomeScreen(navController: NavController) {
+fun AllTransactions(navController: NavController){
     val viewModel = HomeViewModelFactoty(LocalContext.current).create(HomeViewModel::class.java)
     val coroutineScope = rememberCoroutineScope()
 
 
-    Surface(modifier = Modifier.fillMaxSize()){
-        navController.clearBackStack("/home")
+    Surface(modifier = Modifier.fillMaxSize()) {
 
-        ConstraintLayout(modifier = Modifier.fillMaxSize()){
-            val(nameRow, list, card, topBar, addExpensive)= createRefs()
-            Image(painter = painterResource(id = R.drawable.ic_topbar), contentDescription = "topBar",
-                modifier = Modifier.constrainAs(topBar){
+        ConstraintLayout(modifier = Modifier.fillMaxSize()) {
+            val (nameRow, topBar, list, listTitle, topWalletIcon) = createRefs()
+
+            Image(painter = painterResource(id = R.drawable.ic_topbar),
+                contentDescription = "topBar",
+                modifier = Modifier.constrainAs(topBar) {
                     top.linkTo(parent.top)
                     start.linkTo(parent.start)
                     end.linkTo(parent.end)
                 })
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 64.dp, start = 16.dp, end = 16.dp)
-                    .constrainAs(nameRow) {
-                        top.linkTo(parent.top)
-                        start.linkTo(parent.start)
-                        end.linkTo(parent.end)
-                    }) {
-                Column {
-                    Text(
-                        text = "Greetings",
-                        fontSize = 16.sp,
-                        color = Color.White
-                    )
-                    Text(
-                        text = MainActivity.enteredName,
-                        fontSize = 25.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = Color.White
-                    )
-                }
-                Image(
-                    painter = painterResource(id = R.drawable.ic_settings),
-                    contentDescription = null,
+            Box(modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 60.dp, start = 16.dp, end = 16.dp)
+                .constrainAs(nameRow) {
+                    top.linkTo(parent.top)
+                    start.linkTo(parent.start)
+                    end.linkTo(parent.end)
+                }) {
+                Image(painter = painterResource(id = R.drawable.ic_back), contentDescription = null,
                     modifier = Modifier
-                        .align(Alignment.CenterEnd)
-                        .size(25.dp)
+                        .align(Alignment.CenterStart)
                         .clickable {
-                            navController.navigate("/settings")
+                            navController.popBackStack()
                         }
                 )
+                Text(
+                    text = "All Transactions",
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Color.White,
+                    modifier = Modifier
+                        .padding(16.dp)
+                        .align(Alignment.Center)
+                )
+                Image(
+                    painter = painterResource(id = R.drawable.ic_dotsmenu),
+                    contentDescription = null,
+                    modifier = Modifier.align(Alignment.CenterEnd)
+                )
             }
-
-            val state = viewModel.transactions.collectAsState(initial = emptyList())
-            val expenses = viewModel.getTotalExpense(state.value)
-            val income = viewModel.getTotalIncome(state.value)
-            val balance = viewModel.getBalance(state.value)
-
-            CardItem(modifier = Modifier
-                .constrainAs(card) {
+            Image(painter = painterResource(id = R.drawable.ic_start),
+                contentDescription = "topBar",
+                modifier = Modifier.padding(top=10.dp).size(175.dp).constrainAs(topWalletIcon) {
                     top.linkTo(nameRow.bottom)
                     start.linkTo(parent.start)
                     end.linkTo(parent.end)
-                }, expenses, income, balance)
-            TransactionList(modifier = Modifier
-                .fillMaxWidth()
-                .constrainAs(list) {
-                    top.linkTo(card.bottom)
-                    start.linkTo(parent.start)
-                    end.linkTo(parent.end)
-                    bottom.linkTo(parent.bottom)
-                    height = Dimension.fillToConstraints
-                }, dataList = state.value, viewModel, coroutineScope, navController)
-            Image(
-                painter = painterResource(id = R.drawable.ic_addexpensive),
-                contentDescription = null,
-                modifier = Modifier
-                    .constrainAs(addExpensive) {
-                        bottom.linkTo(parent.bottom)
-                        end.linkTo(parent.end)
-                        start.linkTo(parent.start)
-                    }
-                    .size(100.dp)
-                    .clip(CircleShape)
-                    .clickable {
-                        navController.navigate("/add")
-                    }
-            )
-        }
-    }
-}
-
-
-@Composable
-fun CardItem(modifier: Modifier, expenses: String, income: String, balance: String){
-    Column(modifier = modifier
-        .padding(16.dp)
-        .fillMaxWidth()
-        .height(200.dp)
-        .clip(RoundedCornerShape(16.dp))
-        .background(Zinc)
-        .padding(16.dp)
-    ){
-        Box(modifier = Modifier
-            .fillMaxWidth()
-            .weight(1f)) {
-            Column (modifier = Modifier.align(Alignment.CenterStart)){
-                Text(text = "Total Balance", fontSize = 20.sp, color = Color.White)
-                Text(
-                    text = balance,
-                    fontSize = 28.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = Color.White
-                )
+                })
+            val state = viewModel.transactions.collectAsState(initial = emptyList())
+            Box(modifier = Modifier.fillMaxWidth().padding(top=20.dp, start = 15.dp).constrainAs(listTitle){
+                top.linkTo(topWalletIcon.bottom)
+                start.linkTo(parent.start)
+            }){
+                Text(text = "Transaction list: ", fontSize = 20.sp, fontWeight = FontWeight.Medium)
             }
-            Image(
-                painter = painterResource(id = R.drawable.ic_dotsmenu),
-                contentDescription = null,
-                modifier = Modifier.align(Alignment.CenterEnd)
-            )
-        }
-
-        Box (modifier = Modifier
-            .fillMaxWidth()
-            .weight(1f)){
-            CardRowItem(modifier = Modifier.align(Alignment.CenterStart),
-                title = "Income",
-                amount = income,
-                image = R.drawable.ic_income)
-            CardRowItem(modifier = Modifier.align(Alignment.CenterEnd),
-                title = "Expense",
-                amount = expenses,
-                image = R.drawable.ic_expense)
+            AllTransactionList(modifier = Modifier.fillMaxWidth().padding(top=5.dp).constrainAs(list) {
+                top.linkTo(listTitle.bottom)
+                start.linkTo(parent.start)
+                end.linkTo(parent.end)
+                bottom.linkTo(parent.bottom)
+                height = Dimension.fillToConstraints
+            }, dataList = state.value, viewModel, coroutineScope, navController)
         }
     }
 }
 
 @Composable
-fun CardRowItem(modifier: Modifier,title: String, amount: String, image: Int){
-    Column(modifier = modifier) {
-        Row{
-            Image(painter = painterResource(id = image), contentDescription = null)
-            Spacer(modifier = Modifier.size(8.dp))
-            Text(text = title, fontSize = 16.sp, color = Color.White)
-        }
-        Text(text = amount, fontSize = 20.sp, color = Color.White)
-    }
-}
-
-@Composable
-fun TransactionList(modifier: Modifier, dataList: List<TransactionEntity>, viewModel: HomeViewModel, coroutineScope: CoroutineScope, navController: NavController){
+fun AllTransactionList(modifier: Modifier, dataList: List<TransactionEntity>, viewModel: HomeViewModel, coroutineScope: CoroutineScope, navController: NavController){
     LazyColumn(modifier = modifier
         .padding(horizontal = 16.dp)
-        .height(1.dp)){
+        .height(1.dp)
+        .background(grayOne, shape = RoundedCornerShape(16.dp))){
         item{
-            Box(modifier = Modifier.fillMaxWidth()){
-                Text(text = "Recent Transactions", fontSize = 20.sp)
-                Text(text = "See all",
-                    fontSize = 16.sp,
-                    color = Color.Gray,
-                    modifier = Modifier.align(Alignment.CenterEnd).clickable {
-                        navController.navigate("/all_transactions"){
-                            navController.clearBackStack("/all_transactions")
-                        }
-                    }
-                )
-            }
         }
-        items(dataList.takeLast(5)){item->
+        items(dataList){item->
             item.transactionId?.let {
-                TransactionListItem(
+                AllTransactionListItem(
                     title = item.name,
                     amount = item.amount.toString(),
                     icon = viewModel.getItemIcon(item),
@@ -229,12 +142,10 @@ fun TransactionList(modifier: Modifier, dataList: List<TransactionEntity>, viewM
             }
         }
     }
-
 }
 
-
 @Composable
-fun TransactionListItem(title: String,
+fun AllTransactionListItem(title: String,
                         amount: String,
                         icon: Int,
                         date:String,
@@ -288,7 +199,7 @@ fun TransactionListItem(title: String,
                     Button(
                         onClick = {
                             coroutineScope.launch {
-                               viewModel.removeTransaction(itemId)
+                                viewModel.removeTransaction(itemId)
                             }
                             isDeleteDialogVisible.value = false
                         }, colors = ButtonDefaults.buttonColors(Zinc)
@@ -317,7 +228,7 @@ fun TransactionListItem(title: String,
 }
 
 @Composable
-@Preview (showBackground = true)
-fun PreviewHomeScreen(){
-    HomeScreen(rememberNavController())
+@Preview
+fun PreviewAllTransactions(){
+    AllTransactions(rememberNavController())
 }

@@ -41,8 +41,17 @@ abstract class TransactionDataBase : RoomDatabase() {
                         daoUser.insertUser(RegisteredUser(2, "kie", "kie", "Kie"))
                         daoTransaction.insertTransaction(TransactionEntity(1, 1,"Salary", 5000.0, "Today", "asd", "Income"))
                         daoTransaction.insertTransaction(TransactionEntity(2, 1, "Shopping", 3000.0, "Tomorrow", "asd", "Expense"))
+                        daoTransaction.insertTransaction(TransactionEntity(5, 1,"Salary", 5000.0, "Today", "asd", "Income"))
+                        daoTransaction.insertTransaction(TransactionEntity(6, 1, "Shopping", 3000.0, "Today", "asd", "Expense"))
+                        daoTransaction.insertTransaction(TransactionEntity(7, 1,"Salary", 5000.0, "Today", "asd", "Income"))
+                        daoTransaction.insertTransaction(TransactionEntity(8, 1, "Shopping", 3000.0, "Today", "asd", "Expense"))
+                        daoTransaction.insertTransaction(TransactionEntity(9, 1,"Salary", 5000.0, "Today", "asd", "Income"))
+                        daoTransaction.insertTransaction(TransactionEntity(10, 1, "Shopping", 3000.0, "Today", "asd", "Expense"))
+                        daoTransaction.insertTransaction(TransactionEntity(11, 1,"Salary", 5000.0, "Today", "asd", "Income"))
+                        daoTransaction.insertTransaction(TransactionEntity(12, 1, "Shopping", 3000.0, "Today", "asd", "Expense"))
+                        daoTransaction.insertTransaction(TransactionEntity(13, 1,"Salary", 5000.0, "Today", "asd", "Income"))
+                        daoTransaction.insertTransaction(TransactionEntity(4, 1, "Shopping", 3000.0, "Tomorrow", "asd", "Expense"))
                         daoTransaction.insertTransaction(TransactionEntity(3, 2,"Salary", 5000.0, "Today", "asd", "Income"))
-                        daoTransaction.insertTransaction(TransactionEntity(4, 2,"Rent", 700.0, "Today", "asd", "Expense"))
                     }
                 }
             }).build()

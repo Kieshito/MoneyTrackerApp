@@ -11,7 +11,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -35,16 +37,22 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.moneytracker.data.model.RegisteredUser
+import com.example.moneytracker.ui.theme.Zinc
 import com.example.moneytracker.viewmodel.LoginViewModel
 import com.example.moneytracker.viewmodel.LoginViewModelFactoty
 import com.example.moneytracker.viewmodel.RegistrationViewModel
 import com.example.moneytracker.viewmodel.RegistrationViewModelFactoty
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 
 @Composable
 fun RegistrationScreen(navController: NavController) {
     val viewModel = RegistrationViewModelFactoty(LocalContext.current).create(RegistrationViewModel::class.java)
     val coroutineScope = rememberCoroutineScope()
+
+    val isUserAlreadyExist = remember{
+        mutableStateOf(false)
+    }
 
     Surface(modifier = Modifier.fillMaxSize()) {
         ConstraintLayout(modifier = Modifier.fillMaxSize()) {
@@ -90,8 +98,11 @@ fun RegistrationScreen(navController: NavController) {
                         if (viewModel.checkUser(it)){
                             viewModel.registration(it)
                             navController.navigate("/home"){
+                                navController.clearBackStack("/home")
                                 navController.popBackStack()
                             }
+                        } else{
+                            isUserAlreadyExist.value = true
                         }
                     }
             })
@@ -107,6 +118,29 @@ fun RegistrationScreen(navController: NavController) {
                         end.linkTo(parent.end)
                     })
         }
+
+        if(isUserAlreadyExist.value){
+            AlertDialog(
+                onDismissRequest = {
+                },
+                title = { Text(text = "Error") },
+                text = { Text(text = "User already exists") },
+                confirmButton = {
+                    Button(
+                        onClick = {
+                            coroutineScope.launch {
+                                isUserAlreadyExist.value = false
+                            }
+                        }, colors = ButtonDefaults.buttonColors(Zinc)
+                    ) {
+                        Text(
+                            text = "Confirm",
+                            color = Color.White,
+                        )
+                    }
+                }
+            )
+        }
     }
 }
 
@@ -121,6 +155,10 @@ fun RegistrationForm(navController: NavController, modifier: Modifier, onConfirm
     val Treatment = remember {
         mutableStateOf("")
     }
+    val isWrongDataDialog = remember {
+        mutableStateOf(false)
+    }
+    val coroutineScope = rememberCoroutineScope()
 
 
     Column(modifier = modifier
@@ -138,6 +176,7 @@ fun RegistrationForm(navController: NavController, modifier: Modifier, onConfirm
             onValueChange = {
                 Login.value = it
             },
+            isError = Login.value.isEmpty(),
             modifier = Modifier.fillMaxWidth())
         Spacer(modifier = Modifier.size(16.dp))
 
@@ -149,6 +188,7 @@ fun RegistrationForm(navController: NavController, modifier: Modifier, onConfirm
                 Password.value = it
             },
             visualTransformation = PasswordVisualTransformation(),
+            isError =  Password.value.isEmpty(),
             modifier = Modifier.fillMaxWidth())
         Spacer(modifier = Modifier.size(16.dp))
 
@@ -159,6 +199,7 @@ fun RegistrationForm(navController: NavController, modifier: Modifier, onConfirm
             onValueChange = {
                 Treatment.value = it
             },
+            isError = Treatment.value.isEmpty(),
             modifier = Modifier.fillMaxWidth())
         Spacer(modifier = Modifier.size(16.dp))
 
@@ -169,13 +210,40 @@ fun RegistrationForm(navController: NavController, modifier: Modifier, onConfirm
                 Treatment.value,
                 Password.value
             )
-            onConfirmClick(model)
-                         }, //TODO: доделать, чтоб возвращало даже не на стартовый экран, а выкидывало из приложения
+            if (Login.value != "" && Password.value!="" && Treatment.value !=""){
+                onConfirmClick(model)
+            } else{
+                isWrongDataDialog.value = true
+            }
+        }, //TODO: доделать, чтоб возвращало даже не на стартовый экран, а выкидывало из приложения
             Modifier
                 .clip(RoundedCornerShape(2.dp))
                 .fillMaxWidth()){
             Text(text = "Confirm", fontSize = 14.sp, color = Color.White)
         }
+    }
+
+    if (isWrongDataDialog.value) {
+        AlertDialog(
+            onDismissRequest = {
+            },
+            title = { Text(text = "Wrong data") },
+            text = { Text(text = "Check your data") },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        coroutineScope.launch {
+                            isWrongDataDialog.value = false
+                        }
+                    }, colors = ButtonDefaults.buttonColors(Zinc)
+                ) {
+                    Text(
+                        text = "Confirm",
+                        color = Color.White,
+                    )
+                }
+            }
+        )
     }
 }
 

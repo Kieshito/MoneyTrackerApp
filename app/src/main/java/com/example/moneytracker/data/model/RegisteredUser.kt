@@ -7,6 +7,6 @@ import androidx.room.PrimaryKey
 data class RegisteredUser(
     @PrimaryKey(autoGenerate = true) var userId: Int?,
     val login: String,
-    val preferredTreatment: String?,
+    val preferredTreatment: String,
     val password: String //храним и сравниваем хеш введенного пароля
 )

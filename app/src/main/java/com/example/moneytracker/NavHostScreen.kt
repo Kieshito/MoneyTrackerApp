@@ -31,5 +31,14 @@ fun NavHostScreen() {
         composable(route = "/info"){
             //TODO: сделать экран
         }
+        composable(route = "/settings"){
+            SettingsScreen(navController)
+        }
+        composable(route ="/edit_profile"){
+            EditProfile(navController)
+        }
+        composable(route = "/all_transactions"){
+            AllTransactions(navController)
+        }
     }
 }

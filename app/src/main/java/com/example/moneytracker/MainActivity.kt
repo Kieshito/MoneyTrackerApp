@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
+import com.example.moneytracker.data.model.RegisteredUser
 import com.example.moneytracker.ui.theme.MoneyTrackerTheme
 import kotlin.properties.Delegates
 
@@ -27,8 +28,9 @@ class MainActivity : ComponentActivity() {
     }
 
     companion object {
-        var enteredUserId = 0
-        var enteredName = ""
+        var enteredUserId = 1
+        var enteredName = "Danil Vasilev"
+        var enteredLogin = ""
     }
 }
 
